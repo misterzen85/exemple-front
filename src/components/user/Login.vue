@@ -2,21 +2,29 @@
   <div class="container">
     <div class="card card-container">
       <div class="text-center icon" style="margin-bottom: 30px">
-        <img src="https://i.imgur.com/o2lJKHK.png" height="130px" />
+        <img src="/static/logo.png" height="150px" />
       </div>
       <h1 class="text-center">Bienvenue</h1>
+      <form class="form-signin" @submit.prevent="submit">
+        <br>
+        <template v-if="error!=null">
+          <div class="form-group has-danger">
+            <input type="text" class="form-control form-control-danger" placeholder="Identifiant" v-model="username" required>
+            <input type="password" class="form-control " placeholder="Mot de passe" v-model="password" required>
+          </div>
+        </template>
+        <template v-if="error==null">
+          <input type="text" class="form-control" placeholder="Identifiant" v-model="username" required>
+          <input type="password" class="form-control" placeholder="Mot de passe" v-model="password" required>
+        </template>
+        <button class="btn btn-lg btn-outline-primary btn-block" type="submit">Connexion</button>
+      </form>
       <div v-if="error != null" class="animated pulse alert alert-danger" role="alert">
         <button type="button" class="close" @click.prevent="removeError" aria-label="Fermer">
           <span aria-hidden="true">&times;</span>
         </button>
         {{ error }}
       </div>
-      <form class="form-signin" @submit.prevent="submit">
-        <br>
-        <input type="text" class="form-control" placeholder="Identifiant" v-model="username" required>
-        <input type="password" class="form-control" placeholder="Mot de passe" v-model="password" required>
-        <button class="btn btn-lg btn-outline-primary btn-block" type="submit">Connexion</button>
-      </form>
     </div>
   </div>
 </template>
@@ -37,10 +45,12 @@ export default {
     submit () {
       this.error = null
       var credentials = { username: this.username, password: this.password }
-      this.$store.dispatch('auth/login', { credentials }).then((resp) => {
-        this.$router.push({ name: 'dashboard' })
-      }, (err) => {
-        this.onFailLogin(err)
+      this.$store.dispatch('auth/login', { credentials }).then((res) => {
+        if (res.message === 'invalid_credentials') {
+          this.error = 'Identifiant ou mot de passe incorrect'
+        } else {
+          this.$router.push({ name: 'tickets-list' })
+        }
       })
     },
 
@@ -77,7 +87,7 @@ input {
 }
 
 .card-container.card {
-  max-width: 350px;
+  max-width: 400px;
   padding: 40px 40px;
 }
 
