@@ -45,21 +45,13 @@ export default {
     submit () {
       this.error = null
       var credentials = { username: this.username, password: this.password }
-      this.$store.dispatch('auth/login', { credentials }).then((res) => {
-        if (res.message === 'invalid_credentials') {
+      this.$store.dispatch('auth/login', { credentials }).then((resp) => {
+        if (resp.message === 'invalid_credentials') {
           this.error = 'Identifiant ou mot de passe incorrect'
         } else {
           this.$router.push({ name: 'tickets-list' })
         }
       })
-    },
-
-    onFailLogin (err) {
-      if (err.response.data.message === 'invalid_credentials') {
-        this.error = 'Identifiant ou mot de passe incorrect'
-      } else {
-        this.error = err.response.data.message
-      }
     },
 
     removeError () {
